@@ -24,6 +24,14 @@ inputs:
   actual-cache-key:
     description: "Cache key for actual"
     required: false
+  summary-comment:
+    description: "If true, add a summary comment on workflow summary"
+    required: false
+    default: false
+  review-comment:
+    description: "If true, add a review comment on PR review"
+    required: false
+    default: false
 
 outputs:
   actual-sha:
@@ -163,3 +171,76 @@ runs:
         name: easy-vrt-report
         path: .easy-vrt
         # retention-days: 3
+
+    - if: ${{ !cancelled() && inputs.mode == 'compare' }}
+      uses: actions/github-script@v7
+      env:
+        SUMMARY_COMMENT: ${{ inputs.summary-comment }}
+        REVIEW_COMMENT: ${{ inputs.review-comment }}
+      with:
+        script: |
+          const fs = require('fs');
+
+          const summaryComment = process.env.SUMMARY_COMMENT === 'true';
+          const reviewComment = process.env.REVIEW_COMMENT === 'true';
+
+          const log = fs.readFileSync('.easy-vrt/report.json', 'utf-8');
+          console.log(log);
+          const json = JSON.parse(log);
+          console.log(json);
+
+          const titleIcon = '✅';
+          const easyVrtComment = '<!-- Easy VRT Comment -->';
+
+          const stats = {
+            changed: json.failedItems.length.toString(),
+            newItems: json.newItems.length.toString(),
+            deleted: json.deletedItems.length.toString(),
+            passing: json.passedItems.length.toString()
+          };
+
+          const markdown = await core.summary
+            .addHeading(`${titleIcon} easy-vrt has checked for visual changes`, 3)
+            .addTable([
+              ["🔴 Changed",  "🟡 New",        "🟤  Deleted",  "🔵 Passing"],
+              [stats.changed, stats.newItems, stats.deleted, stats.passing]
+            ])
+            .addHeading("📊 Download Report", 3)
+            .addLink('You can download the report from the artifact here', `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`)
+            .addRaw(`${easyVrtComment}`)
+            .stringify()
+
+          if (summaryComment) {
+            await core.summary.write()
+          }
+
+          if (reviewComment) {
+            const requestPerPage = 100;
+            try {
+              const listComments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                per_page: requestPerPage
+              });
+              const easyVrtCommentList = listComments.data.find(comment => comment.body.includes(easyVrtComment));
+              if (easyVrtCommentList) {
+                // delete summary comment if exists
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: easyVrtCommentList.id
+                });
+              }
+              // create a comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: markdown
+              });
+            } catch (error) {
+              logError(`Failed to modify comment: ${error.message}`);
+              return;
+            }
+          }
