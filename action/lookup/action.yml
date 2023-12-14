@@ -1,0 +1,9 @@
+name: "lookup"
+
+description: "lookup"
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: echo lookup action

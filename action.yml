@@ -1,0 +1,165 @@
+name: "Easy VRT"
+
+description: "Easy VRT is a utility action for visual regression testing."
+
+author: "yorifuji"
+
+branding:
+  icon: code
+  color: blue
+
+inputs:
+  mode:
+    description: "Mode, [lookup, expected, actual, compare]"
+    required: true
+  expected-dir:
+    description: "Expected directory"
+    required: false
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: false
+  actual-dir:
+    description: "Actual directory"
+    required: false
+  actual-cache-key:
+    description: "Cache key for actual"
+    required: false
+
+outputs:
+  actual-sha:
+    description: "Actual SHA"
+    value: ${{ steps.lookup-sha.outputs.actual-sha }}
+  actual-cache-hit:
+    description: "Whether the actual cache was found"
+    value: ${{ steps.lookup-actual-cache.outputs.cache-hit }}
+  expected-sha:
+    description: "Expected SHA"
+    value: ${{ steps.lookup-sha.outputs.expected-sha }}
+  expected-cache-hit:
+    description: "Whether the expected cache was found"
+    value: ${{ steps.lookup-expected-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "mode: ${{ inputs.mode }}"
+
+    # lookup
+
+    - if: ${{ inputs.mode == 'lookup' }}
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - if: ${{ inputs.mode == 'lookup' }}
+      id: lookup-sha
+      shell: bash
+      run: |
+        echo "actual-sha=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_OUTPUT
+        echo "expected-sha=$(git merge-base origin/$GITHUB_BASE_REF origin/$GITHUB_HEAD_REF)" >> $GITHUB_OUTPUT
+
+    - if: ${{ inputs.mode == 'lookup' }}
+      id: lookup-actual-cache
+      uses: actions/cache@v3
+      with:
+        key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
+        path: .easy-vrt/actual
+        lookup-only: true
+
+    - if: ${{ inputs.mode == 'lookup' }}
+      id: lookup-expected-cache
+      uses: actions/cache@v3
+      with:
+        key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
+        path: .easy-vrt/expected
+        lookup-only: true
+
+    # expected
+
+    - if: ${{ inputs.mode == 'expected' }}
+      shell: bash
+      run: |
+        if [ -e .easy-vrt ]; then exit 1; fi
+        mkdir .easy-vrt && mv ${{ inputs.expected-dir }} .easy-vrt/expected
+
+    - if: ${{ inputs.mode == 'expected' }}
+      uses: actions/cache/save@v3
+      with:
+        path: .easy-vrt/expected
+        key: reg-suit-cache-${{ inputs.expected-cache-key }}
+
+    # actual
+
+    - if: ${{ inputs.mode == 'actual' }}
+      shell: bash
+      run: |
+        if [ -e .easy-vrt ]; then exit 1; fi
+        mkdir .easy-vrt && mv ${{ inputs.actual-dir }} .easy-vrt/actual
+
+    - if: ${{ inputs.mode == 'actual' }}
+      uses: actions/cache/save@v3
+      with:
+        path: .easy-vrt/actual
+        key: reg-suit-cache-${{ inputs.actual-cache-key }}
+
+    # compare
+
+    - if: ${{ inputs.mode == 'compare' }}
+      shell: bash
+      run: |
+        echo ${{ inputs.expected-cache-key }}
+        echo ${{ inputs.actual-cache-key }}
+
+    - if: ${{ inputs.mode == 'compare' }}
+      shell: bash
+      run: |
+        ls -altr
+        if [ -e .easy-vrt ]; then exit 1; fi
+
+    - if: ${{ inputs.mode == 'compare' }}
+      shell: bash
+      run: |
+        if [ -e package.json ]; then exit 1; fi
+        if [ -e package-lock.json ]; then exit 1; fi
+        cp $GITHUB_ACTION_PATH/package.json $GITHUB_ACTION_PATH/package-lock.json .
+
+    - if: ${{ inputs.mode == 'compare' }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: npm
+
+    - if: ${{ inputs.mode == 'compare' }}
+      shell: bash
+      run: npm install
+
+    - if: ${{ inputs.mode == 'compare' }}
+      uses: actions/cache/restore@v3
+      with:
+        key: reg-suit-cache-${{ inputs.actual-cache-key }}
+        path: .easy-vrt/actual
+
+    - if: ${{ inputs.mode == 'compare' }}
+      uses: actions/cache/restore@v3
+      with:
+        key: reg-suit-cache-${{ inputs.expected-cache-key }}
+        path: .easy-vrt/expected
+
+    - if: ${{ inputs.mode == 'compare' }}
+      shell: bash
+      run: >
+        npx reg-cli
+        .easy-vrt/actual
+        .easy-vrt/expected
+        .easy-vrt/diff
+        -R .easy-vrt/report.html
+        -J .easy-vrt/report.json
+
+    - if: ${{ !cancelled() && inputs.mode == 'compare' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: easy-vrt-report
+        path: .easy-vrt
+        # retention-days: 3

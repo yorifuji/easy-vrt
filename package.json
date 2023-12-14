@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "reg-cli": "^0.17.7"
+  }
+}

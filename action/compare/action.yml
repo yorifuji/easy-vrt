@@ -1,0 +1,9 @@
+name: "compare"
+
+description: "compare action"
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: echo compare action
