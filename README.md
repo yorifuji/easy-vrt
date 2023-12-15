@@ -1,8 +1,10 @@
 # Easy VRT
 
+Easy VRT is a GitHub Action that simplifies visual regression testing by providing a workflow template, incorporating [reg-cli](https://github.com/reg-viz/reg-cli) for efficient testing processes.
+
 ## Usage
 
-Example workflow
+Example workflow:
 
 ```yaml
 name: vrt
@@ -37,14 +39,14 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.expected-sha }}
 
-      # >>> create expected image
+      # >>> write your code to create expected image
 
-      # <<< create expected image
+      # <<< write your code to create expected image
 
       - uses: yorifuji/easy-vrt@main
         with:
           mode: expected
-          expected-dir: your-expected-image-dir
+          expected-dir: your-expected-image-dir # set the directory where the expected image is stored
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
 
   actual:
@@ -56,14 +58,14 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.actual-sha }}
 
-      # >>> create actual image
+      # >>> write your code to create actual image
 
-      # <<< create actual image
+      # <<< write your code to create actual image
 
       - uses: yorifuji/easy-vrt@main
         with:
           mode: actual
-          actual-dir: your-actual-image-dir
+          actual-dir: your-actual-image-dir # set the directory where the actual image is stored
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 
   compare:
@@ -78,14 +80,20 @@ jobs:
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 ```
 
-## Features
-
-## How it works
-
-## Motivation
-
-## Known issues
-
 ## License
 
-MIT
+### reg-cli
+
+The MIT License (MIT)
+
+Copyright (c) 2017 bokuweb
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Easy VRT
+
+MIT License
