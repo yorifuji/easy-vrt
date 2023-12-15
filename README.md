@@ -25,7 +25,7 @@ jobs:
       expected-sha: ${{ steps.lookup.outputs.expected-sha }}
       expected-cache-hit: ${{ steps.lookup.outputs.expected-cache-hit }}
     steps:
-      - uses: yorifuji/easy-vrt@main
+      - uses: yorifuji/easy-vrt@v1
         id: lookup
         with:
           mode: lookup
@@ -43,7 +43,7 @@ jobs:
 
       # <<< write your code to create expected image
 
-      - uses: yorifuji/easy-vrt@main
+      - uses: yorifuji/easy-vrt@v1
         with:
           mode: expected
           expected-dir: your-expected-image-dir # set the directory where the expected image is stored
@@ -62,7 +62,7 @@ jobs:
 
       # <<< write your code to create actual image
 
-      - uses: yorifuji/easy-vrt@main
+      - uses: yorifuji/easy-vrt@v1
         with:
           mode: actual
           actual-dir: your-actual-image-dir # set the directory where the actual image is stored
@@ -73,7 +73,7 @@ jobs:
     needs: [lookup, expected, actual]
     runs-on: ubuntu-latest
     steps:
-      - uses: yorifuji/easy-vrt@main
+      - uses: yorifuji/easy-vrt@v1
         with:
           mode: compare
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
