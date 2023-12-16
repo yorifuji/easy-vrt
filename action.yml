@@ -117,8 +117,8 @@ runs:
     - if: ${{ inputs.mode == 'compare' }}
       shell: bash
       run: |
-        echo ${{ inputs.expected-cache-key }}
-        echo ${{ inputs.actual-cache-key }}
+        echo expected-cache-key ${{ inputs.expected-cache-key }}
+        echo actual-cache-key ${{ inputs.actual-cache-key }}
 
     - if: ${{ inputs.mode == 'compare' }}
       shell: bash
