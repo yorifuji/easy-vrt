@@ -65,8 +65,8 @@ runs:
       id: lookup-sha
       shell: bash
       run: |
-        echo "actual-sha=$GITHUB_HEAD_REF" >> $GITHUB_OUTPUT
-        echo "expected-sha=$(git merge-base origin/$GITHUB_BASE_REF origin/$GITHUB_HEAD_REF)" >> $GITHUB_OUTPUT
+        echo "actual-sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+        echo "expected-sha=$(git merge-base origin/${{ github.event.pull_request.base.sha }} origin/${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
 
     - if: ${{ inputs.mode == 'lookup' }}
       id: lookup-actual-cache
