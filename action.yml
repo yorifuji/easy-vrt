@@ -65,7 +65,7 @@ runs:
       id: lookup-sha
       shell: bash
       run: |
-        echo "actual-sha=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_OUTPUT
+        echo "actual-sha=$GITHUB_HEAD_REF" >> $GITHUB_OUTPUT
         echo "expected-sha=$(git merge-base origin/$GITHUB_BASE_REF origin/$GITHUB_HEAD_REF)" >> $GITHUB_OUTPUT
 
     - if: ${{ inputs.mode == 'lookup' }}
