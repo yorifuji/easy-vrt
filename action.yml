@@ -165,7 +165,7 @@ runs:
         -J .easy-vrt/report.json
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: easy-vrt-report
         path: .easy-vrt
