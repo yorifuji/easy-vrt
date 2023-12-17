@@ -109,6 +109,27 @@ inputs:
     default: false
 ```
 
+## Outputs
+
+
+### Artifact
+
+<img width="767" src="https://github.com/yorifuji/easy-vrt/assets/583917/0735cde4-3296-480b-83cf-ebcbc3a5989d">
+
+### Summary(Optional)
+
+<img width="766" src="https://github.com/yorifuji/easy-vrt/assets/583917/767a129e-bf9d-44e1-80f8-ae68bd4af07d">
+
+### Report(In Artifact)
+
+<img width="750" src="https://github.com/yorifuji/easy-vrt/assets/583917/8c5fe36b-6ef8-4977-b98a-96c6f134a88d">
+
+### Pull Request Revice Comment(Optional)
+
+<img width="753"  src="https://github.com/yorifuji/easy-vrt/assets/583917/8dba42ed-5a77-4363-9993-0e9877dd9ccc">
+
+
+
 ## License
 
 ### reg-cli
