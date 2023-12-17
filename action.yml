@@ -123,7 +123,6 @@ runs:
     - if: ${{ inputs.mode == 'compare' }}
       shell: bash
       run: |
-        ls -altr
         if [ -e .easy-vrt ]; then exit 1; fi
 
     - if: ${{ inputs.mode == 'compare' }}
