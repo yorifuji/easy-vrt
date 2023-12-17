@@ -80,6 +80,35 @@ jobs:
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 ```
 
+### Inputs
+
+```yaml
+inputs:
+  mode:
+    description: "Mode, [lookup, expected, actual, compare]"
+    required: true
+  expected-dir:
+    description: "Expected directory"
+    required: false
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: false
+  actual-dir:
+    description: "Actual directory"
+    required: false
+  actual-cache-key:
+    description: "Cache key for actual"
+    required: false
+  summary-comment:
+    description: "If true, add a summary comment on workflow summary"
+    required: false
+    default: false
+  review-comment:
+    description: "If true, add a review comment on PR review (pull-requests permissions required)"
+    required: false
+    default: false
+```
+
 ## License
 
 ### reg-cli
