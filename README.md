@@ -39,14 +39,16 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.expected-sha }}
 
-      # >>> add step to create expected image
+      - uses: subosito/flutter-action@v2
 
-      # <<< add step to create expected image
+      - run: |
+          flutter pub get
+          flutter test --update-goldens --tags=golden
 
       - uses: yorifuji/easy-vrt@v1
         with:
           mode: expected
-          expected-dir: your-expected-image-dir # set the directory where the expected image is stored
+          expected-dir: test/golden_test/goldens
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
 
   actual:
@@ -58,14 +60,16 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.actual-sha }}
 
-      # >>> add step to create actual image
+      - uses: subosito/flutter-action@v2
 
-      # <<< add step to create actual image
+      - run: |
+          flutter pub get
+          flutter test --update-goldens --tags=golden
 
       - uses: yorifuji/easy-vrt@v1
         with:
           mode: actual
-          actual-dir: your-actual-image-dir # set the directory where the actual image is stored
+          actual-dir: test/golden_test/goldens
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 
   compare:
@@ -79,6 +83,50 @@ jobs:
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 ```
+
+### Example for Flutter Applications
+
+This section demonstrates how to adapt Easy VRT for Flutter applications, highlighting necessary changes in the workflow.
+
+expected
+
+```diff
+-      # >>> add step to create expected image
++      - uses: subosito/flutter-action@v2
+
+-      # <<< add step to create expected image
++      - run: |
++          flutter pub get
++          flutter test --update-goldens --tags=golden
+
+       - uses: yorifuji/easy-vrt@v1
+         with:
+           mode: expected
+-          expected-dir: your-expected-image-dir # set the directory where the expected image is stored
++          expected-dir: test/golden_test/goldens
+           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
+```
+
+actual
+
+```diff
+-      # >>> add step to create actual image
++      - uses: subosito/flutter-action@v2
+
+-      # <<< add step to create actual image
++      - run: |
++          flutter pub get
++          flutter test --update-goldens --tags=golden
+
+       - uses: yorifuji/easy-vrt@v1
+         with:
+           mode: actual
+-          actual-dir: your-actual-image-dir # set the directory where the actual image is stored
++          actual-dir: test/golden_test/goldens
+           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
+```
+
+## Actions
 
 ### Inputs
 
