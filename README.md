@@ -1,6 +1,6 @@
 # Easy VRT
 
-Easy VRT is a GitHub Action that simplifies visual regression testing by providing a workflow template, incorporating [reg-cli](https://github.com/reg-viz/reg-cli) for efficient testing processes.
+Easy VRT is a GitHub Action that simplifies visual regression testing by providing a workflow template.
 
 ## Usage
 
@@ -129,7 +129,7 @@ inputs:
 
 ## License
 
-### reg-cli
+### [reg-cli](https://github.com/reg-viz/reg-cli)
 
 The MIT License (MIT)
 
