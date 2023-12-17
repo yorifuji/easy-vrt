@@ -123,7 +123,7 @@ inputs:
 
 <img width="766" src="https://github.com/yorifuji/easy-vrt/assets/583917/767a129e-bf9d-44e1-80f8-ae68bd4af07d">
 
-### Pull Request Revice Comment(Optional)
+### Pull Request Review Comment(Optional)
 
 <img width="753"  src="https://github.com/yorifuji/easy-vrt/assets/583917/8dba42ed-5a77-4363-9993-0e9877dd9ccc">
 
