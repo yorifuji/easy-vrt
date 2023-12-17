@@ -39,9 +39,9 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.expected-sha }}
 
-      # >>> write your code to create expected image
+      # >>> add step to create expected image
 
-      # <<< write your code to create expected image
+      # <<< add step to create expected image
 
       - uses: yorifuji/easy-vrt@v1
         with:
@@ -58,9 +58,9 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.actual-sha }}
 
-      # >>> write your code to create actual image
+      # >>> add step to create actual image
 
-      # <<< write your code to create actual image
+      # <<< add step to create actual image
 
       - uses: yorifuji/easy-vrt@v1
         with:
