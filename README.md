@@ -39,16 +39,14 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.expected-sha }}
 
-      - uses: subosito/flutter-action@v2
+      # >>> add step to create expected image
 
-      - run: |
-          flutter pub get
-          flutter test --update-goldens --tags=golden
+      # <<< add step to create expected image
 
       - uses: yorifuji/easy-vrt@v1
         with:
           mode: expected
-          expected-dir: test/golden_test/goldens
+          expected-dir: your-expected-image-dir # set the directory where the expected image is stored
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
 
   actual:
@@ -60,16 +58,14 @@ jobs:
         with:
           ref: ${{ needs.lookup.outputs.actual-sha }}
 
-      - uses: subosito/flutter-action@v2
+      # >>> add step to create actual image
 
-      - run: |
-          flutter pub get
-          flutter test --update-goldens --tags=golden
+      # <<< add step to create actual image
 
       - uses: yorifuji/easy-vrt@v1
         with:
           mode: actual
-          actual-dir: test/golden_test/goldens
+          actual-dir: your-actual-image-dir # set the directory where the actual image is stored
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
 
   compare:
