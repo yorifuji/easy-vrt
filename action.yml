@@ -239,7 +239,7 @@ runs:
                 body: markdown
               });
             } catch (error) {
-              logError(`Failed to modify comment: ${error.message}`);
+              core.error(`Failed to modify comment: ${error.message}`);
               return;
             }
           }
