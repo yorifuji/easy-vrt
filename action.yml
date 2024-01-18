@@ -199,7 +199,7 @@ runs:
           };
 
           const markdown = await core.summary
-            .addHeading(`${titleIcon} easy-vrt has checked for visual changes`, 3)
+            .addHeading(`${titleIcon} Easy VRT has checked for visual changes`, 3)
             .addTable([
               ["🔴 Changed",  "🟡 New",        "🟤  Deleted",  "🔵 Passing"],
               [stats.changed, stats.newItems, stats.deleted, stats.passing]
