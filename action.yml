@@ -208,7 +208,7 @@ runs:
               [stats.changed, stats.newItems, stats.deleted, stats.passing]
             ])
             .addHeading("📊 Download Report", 3)
-            .addLink('You can download the report from the artifact here', `${artifactUrl}`)
+            .addLink('You can download the entire report here', `${artifactUrl}`)
             .addRaw(`${easyVrtComment}`)
             .stringify()
 
