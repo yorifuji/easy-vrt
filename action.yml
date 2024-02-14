@@ -165,6 +165,7 @@ runs:
         -J .easy-vrt/report.json
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
+      id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
         name: easy-vrt-report
@@ -176,12 +177,14 @@ runs:
       env:
         SUMMARY_COMMENT: ${{ inputs.summary-comment }}
         REVIEW_COMMENT: ${{ inputs.review-comment }}
+        ARTIFACT_URL: ${{ steps.upload-artifact.outputs.artifact-url }}
       with:
         script: |
           const fs = require('fs');
 
           const summaryComment = process.env.SUMMARY_COMMENT === 'true';
           const reviewComment = process.env.REVIEW_COMMENT === 'true';
+          const artifactUrl = process.env.ARTIFACT_URL;
 
           const log = fs.readFileSync('.easy-vrt/report.json', 'utf-8');
           console.log(log);
@@ -205,7 +208,7 @@ runs:
               [stats.changed, stats.newItems, stats.deleted, stats.passing]
             ])
             .addHeading("📊 Download Report", 3)
-            .addLink('You can download the report from the artifact here', `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`)
+            .addLink('You can download the report from the artifact here', `${artifactUrl}`)
             .addRaw(`${easyVrtComment}`)
             .stringify()
 
