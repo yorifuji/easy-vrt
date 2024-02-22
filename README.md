@@ -15,6 +15,7 @@ on: pull_request
 
 permissions:
   contents: read
+  pull-requests: write # (Optional) Required if you use review-comment feature
 
 jobs:
   lookup:
