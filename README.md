@@ -79,6 +79,8 @@ jobs:
           mode: compare
           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
+          summary-comment: false # (Optional) If true, add a summary comment on workflow summary
+          review-comment: false # (Optional) If true, add a review comment on PR review (pull-requests permissions required)
 ```
 
 ### Example for Flutter Applications
