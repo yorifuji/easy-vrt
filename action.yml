@@ -163,6 +163,7 @@ runs:
         .easy-vrt/diff
         -R .easy-vrt/report.html
         -J .easy-vrt/report.json
+        --ignoreChange
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
       id: upload-artifact
