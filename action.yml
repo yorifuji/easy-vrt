@@ -171,6 +171,7 @@ runs:
       with:
         name: easy-vrt-report
         path: .easy-vrt
+        include-hidden-files: true
         # retention-days: 3
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
