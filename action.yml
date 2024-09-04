@@ -57,7 +57,7 @@ runs:
     # lookup
 
     - if: ${{ inputs.mode == 'lookup' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
         fetch-depth: 0
 
@@ -70,7 +70,7 @@ runs:
 
     - if: ${{ inputs.mode == 'lookup' }}
       id: lookup-actual-cache
-      uses: actions/cache@v4
+      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
         path: .easy-vrt/actual
@@ -78,7 +78,7 @@ runs:
 
     - if: ${{ inputs.mode == 'lookup' }}
       id: lookup-expected-cache
-      uses: actions/cache@v4
+      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
         path: .easy-vrt/expected
@@ -93,7 +93,7 @@ runs:
         mkdir .easy-vrt && mv ${{ inputs.expected-dir }} .easy-vrt/expected
 
     - if: ${{ inputs.mode == 'expected' }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         path: .easy-vrt/expected
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
@@ -107,7 +107,7 @@ runs:
         mkdir .easy-vrt && mv ${{ inputs.actual-dir }} .easy-vrt/actual
 
     - if: ${{ inputs.mode == 'actual' }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         path: .easy-vrt/actual
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
@@ -133,7 +133,7 @@ runs:
         cp $GITHUB_ACTION_PATH/package.json $GITHUB_ACTION_PATH/package-lock.json .
 
     - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
       with:
         node-version: 20
         cache: npm
@@ -143,13 +143,13 @@ runs:
       run: npm install
 
     - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
         path: .easy-vrt/actual
 
     - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
       with:
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
         path: .easy-vrt/expected
@@ -167,7 +167,7 @@ runs:
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
       id: upload-artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
       with:
         name: easy-vrt-report
         path: .easy-vrt
@@ -175,7 +175,7 @@ runs:
         # retention-days: 3
 
     - if: ${{ !cancelled() && inputs.mode == 'compare' }}
-      uses: actions/github-script@v7
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       env:
         SUMMARY_COMMENT: ${{ inputs.summary-comment }}
         REVIEW_COMMENT: ${{ inputs.review-comment }}
