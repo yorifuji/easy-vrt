@@ -2,7 +2,7 @@
 
 Easy VRT is a GitHub Action that simplifies visual regression testing by providing a workflow template.
 
-## Sequences
+## How it works
 
 Easy VRT consists of the following sequences:
 
