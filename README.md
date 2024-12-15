@@ -25,7 +25,7 @@ jobs:
       expected-sha: ${{ steps.prepare.outputs.expected-sha }}
       expected-cache-hit: ${{ steps.prepare.outputs.expected-cache-hit }}
     steps:
-      - uses: yorifuji/easy-vrt@v2
+      - uses: yorifuji/easy-vrt/prepare@v2
         id: prepare
 
   expected:
@@ -41,7 +41,7 @@ jobs:
 
       # <<< add step to create expected image
 
-      - uses: yorifuji/easy-vrt@v2
+      - uses: yorifuji/easy-vrt/expected@v2
         with:
           expected-dir: your-expected-image-dir # set the directory where the expected image is stored
           expected-cache-key: ${{ needs.prepare.outputs.expected-sha }}
@@ -59,7 +59,7 @@ jobs:
 
       # <<< add step to create actual image
 
-      - uses: yorifuji/easy-vrt@v2
+      - uses: yorifuji/easy-vrt/actual@v2
         with:
           actual-dir: your-actual-image-dir # set the directory where the actual image is stored
           actual-cache-key: ${{ needs.prepare.outputs.actual-sha }}
@@ -69,7 +69,7 @@ jobs:
     needs: [prepare, expected, actual]
     runs-on: ubuntu-latest
     steps:
-      - uses: yorifuji/easy-vrt@v2
+      - uses: yorifuji/easy-vrt/compare@v2
         with:
           expected-cache-key: ${{ needs.prepare.outputs.expected-sha }}
           actual-cache-key: ${{ needs.prepare.outputs.actual-sha }}
@@ -117,7 +117,7 @@ actual
 
 ## Actions
 
-### prepare
+### yorifuji/easy-vrt/prepare
 
 ```yaml
 inputs:
@@ -135,7 +135,7 @@ inputs:
     required: true
 ```
 
-### expected
+### yorifuji/easy-vrt/expected
 
 ```yaml
 inputs:
@@ -147,7 +147,7 @@ inputs:
     required: true
 ```
 
-### prepare
+### yorifuji/easy-vrt/actual
 
 ```yaml
 inputs:
@@ -159,7 +159,7 @@ inputs:
     required: true
 ```
 
-### prepare
+### yorifuji/easy-vrt/comapre
 
 ```yaml
 inputs:
