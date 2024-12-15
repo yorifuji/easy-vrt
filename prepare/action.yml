@@ -1,0 +1,50 @@
+name: "Prepare VRT"
+
+description: "Prepare VRT is a utility action for visual regression testing."
+
+author: "yorifuji"
+
+branding:
+  icon: code
+  color: blue
+
+outputs:
+  actual-sha:
+    description: "Actual SHA"
+    value: ${{ steps.lookup-sha.outputs.actual-sha }}
+  actual-cache-hit:
+    description: "Whether the actual cache was found"
+    value: ${{ steps.lookup-actual-cache.outputs.cache-hit }}
+  expected-sha:
+    description: "Expected SHA"
+    value: ${{ steps.lookup-sha.outputs.expected-sha }}
+  expected-cache-hit:
+    description: "Whether the expected cache was found"
+    value: ${{ steps.lookup-expected-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0
+
+    - id: lookup-sha
+      shell: bash
+      run: |
+        echo "actual-sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+        echo "expected-sha=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
+
+    - id: lookup-actual-cache
+      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
+        path: .easy-vrt/actual
+        lookup-only: true
+
+    - id: lookup-expected-cache
+      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
+        path: .easy-vrt/expected
+        lookup-only: true

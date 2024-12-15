@@ -1,0 +1,155 @@
+name: "Compare VRT"
+
+description: "Compare VRT is a utility action for visual regression testing."
+
+author: "yorifuji"
+
+branding:
+  icon: code
+  color: blue
+
+inputs:
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: required
+  actual-cache-key:
+    description: "Cache key for actual"
+    required: required
+  summary-comment:
+    description: "If true, add a summary comment on workflow summary"
+    required: false
+    default: false
+  review-comment:
+    description: "If true, add a review comment on PR review"
+    required: false
+    default: false
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo expected-cache-key ${{ inputs.expected-cache-key }}
+        echo actual-cache-key ${{ inputs.actual-cache-key }}
+
+    - shell: bash
+      run: |
+        if [ -e .easy-vrt ]; then exit 1; fi
+
+    - shell: bash
+      run: |
+        if [ -e package.json ]; then exit 1; fi
+        if [ -e package-lock.json ]; then exit 1; fi
+        cp $GITHUB_ACTION_PATH/package.json $GITHUB_ACTION_PATH/package-lock.json .
+
+    - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      with:
+        node-version: 20
+        cache: npm
+
+    - shell: bash
+      run: npm install
+
+    - uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        key: reg-suit-cache-${{ inputs.actual-cache-key }}
+        path: .easy-vrt/actual
+
+    - uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        key: reg-suit-cache-${{ inputs.expected-cache-key }}
+        path: .easy-vrt/expected
+
+    - shell: bash
+      run: >
+        npx reg-cli
+        .easy-vrt/actual
+        .easy-vrt/expected
+        .easy-vrt/diff
+        -R .easy-vrt/report.html
+        -J .easy-vrt/report.json
+        --ignoreChange
+
+    - if: ${{ !cancelled() }}
+      id: upload-artifact
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      with:
+        name: easy-vrt-report
+        path: .easy-vrt
+        include-hidden-files: true
+        # retention-days: 3
+
+    - if: ${{ !cancelled() }}
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      env:
+        SUMMARY_COMMENT: ${{ inputs.summary-comment }}
+        REVIEW_COMMENT: ${{ inputs.review-comment }}
+        ARTIFACT_URL: ${{ steps.upload-artifact.outputs.artifact-url }}
+      with:
+        script: |
+          const fs = require('fs');
+
+          const summaryComment = process.env.SUMMARY_COMMENT === 'true';
+          const reviewComment = process.env.REVIEW_COMMENT === 'true';
+          const artifactUrl = process.env.ARTIFACT_URL;
+
+          const log = fs.readFileSync('.easy-vrt/report.json', 'utf-8');
+          console.log(log);
+          const json = JSON.parse(log);
+          console.log(json);
+
+          const titleIcon = '✅';
+          const easyVrtComment = '<!-- Easy VRT Comment -->';
+
+          const stats = {
+            changed: json.failedItems.length.toString(),
+            newItems: json.newItems.length.toString(),
+            deleted: json.deletedItems.length.toString(),
+            passing: json.passedItems.length.toString()
+          };
+
+          const markdown = await core.summary
+            .addHeading(`${titleIcon} Easy VRT has checked for visual changes`, 3)
+            .addTable([
+              ["🔴 Changed",  "🟡 New",        "🟤  Deleted",  "🔵 Passing"],
+              [stats.changed, stats.newItems, stats.deleted, stats.passing]
+            ])
+            .addHeading("📊 Download Report", 3)
+            .addLink('You can download the entire report here', `${artifactUrl}`)
+            .addRaw(`${easyVrtComment}`)
+            .stringify()
+
+          if (summaryComment) {
+            await core.summary.write()
+          }
+
+          if (reviewComment) {
+            const requestPerPage = 100;
+            try {
+              const listComments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                per_page: requestPerPage
+              });
+              const easyVrtCommentList = listComments.data.find(comment => comment.body.includes(easyVrtComment));
+              if (easyVrtCommentList) {
+                // delete summary comment if exists
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: easyVrtCommentList.id
+                });
+              }
+              // create a comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: markdown
+              });
+            } catch (error) {
+              core.error(`Failed to modify comment: ${error.message}`);
+              return;
+            }
+          }
