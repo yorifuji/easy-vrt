@@ -17,67 +17,62 @@ permissions:
   contents: read
 
 jobs:
-  lookup:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
-      actual-sha: ${{ steps.lookup.outputs.actual-sha }}
-      actual-cache-hit: ${{ steps.lookup.outputs.actual-cache-hit }}
-      expected-sha: ${{ steps.lookup.outputs.expected-sha }}
-      expected-cache-hit: ${{ steps.lookup.outputs.expected-cache-hit }}
+      actual-sha: ${{ steps.prepare.outputs.actual-sha }}
+      actual-cache-hit: ${{ steps.prepare.outputs.actual-cache-hit }}
+      expected-sha: ${{ steps.prepare.outputs.expected-sha }}
+      expected-cache-hit: ${{ steps.prepare.outputs.expected-cache-hit }}
     steps:
-      - uses: yorifuji/easy-vrt@v1
-        id: lookup
-        with:
-          mode: lookup
+      - uses: yorifuji/easy-vrt@v2
+        id: prepare
 
   expected:
-    if: ${{ !cancelled() && !failure() && needs.lookup.outputs.expected-cache-hit != 'true' }}
-    needs: lookup
+    if: ${{ !cancelled() && !failure() && needs.prepare.outputs.expected-cache-hit != 'true' }}
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.lookup.outputs.expected-sha }}
+          ref: ${{ needs.prepare.outputs.expected-sha }}
 
       # >>> add step to create expected image
 
       # <<< add step to create expected image
 
-      - uses: yorifuji/easy-vrt@v1
+      - uses: yorifuji/easy-vrt@v2
         with:
-          mode: expected
           expected-dir: your-expected-image-dir # set the directory where the expected image is stored
-          expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
+          expected-cache-key: ${{ needs.prepare.outputs.expected-sha }}
 
   actual:
-    if: ${{ !cancelled() && !failure() && needs.lookup.outputs.actual-cache-hit != 'true' }}
-    needs: lookup
+    if: ${{ !cancelled() && !failure() && needs.prepare.outputs.actual-cache-hit != 'true' }}
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.lookup.outputs.actual-sha }}
+          ref: ${{ needs.prepare.outputs.actual-sha }}
 
       # >>> add step to create actual image
 
       # <<< add step to create actual image
 
-      - uses: yorifuji/easy-vrt@v1
+      - uses: yorifuji/easy-vrt@v2
         with:
-          mode: actual
           actual-dir: your-actual-image-dir # set the directory where the actual image is stored
-          actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
+          actual-cache-key: ${{ needs.prepare.outputs.actual-sha }}
 
   compare:
     if: ${{ !cancelled() && !failure() }}
-    needs: [lookup, expected, actual]
+    needs: [prepare, expected, actual]
     runs-on: ubuntu-latest
     steps:
-      - uses: yorifuji/easy-vrt@v1
+      - uses: yorifuji/easy-vrt@v2
         with:
-          mode: compare
-          expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
-          actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
+          expected-cache-key: ${{ needs.prepare.outputs.expected-sha }}
+          actual-cache-key: ${{ needs.prepare.outputs.actual-sha }}
 ```
 
 ### Example for Flutter Applications
@@ -95,12 +90,11 @@ expected
 +          flutter pub get
 +          flutter test --update-goldens --tags=golden
 
-       - uses: yorifuji/easy-vrt@v1
+       - uses: yorifuji/easy-vrt@v2
          with:
-           mode: expected
 -          expected-dir: your-expected-image-dir # set the directory where the expected image is stored
 +          expected-dir: test/golden_test/goldens
-           expected-cache-key: ${{ needs.lookup.outputs.expected-sha }}
+           expected-cache-key: ${{ needs.prepare.outputs.expected-sha }}
 ```
 
 actual
@@ -114,35 +108,67 @@ actual
 +          flutter pub get
 +          flutter test --update-goldens --tags=golden
 
-       - uses: yorifuji/easy-vrt@v1
+       - uses: yorifuji/easy-vrt@v2
          with:
-           mode: actual
 -          actual-dir: your-actual-image-dir # set the directory where the actual image is stored
 +          actual-dir: test/golden_test/goldens
-           actual-cache-key: ${{ needs.lookup.outputs.actual-sha }}
+           actual-cache-key: ${{ needs.prepare.outputs.actual-sha }}
 ```
 
 ## Actions
 
-### Inputs
+### prepare
 
 ```yaml
 inputs:
-  mode:
-    description: "Mode, [lookup, expected, actual, compare]"
-    required: true
   expected-dir:
     description: "Expected directory"
-    required: false
+    required: true
   expected-cache-key:
     description: "Cache key for expected"
-    required: false
+    required: true
   actual-dir:
     description: "Actual directory"
-    required: false
+    required: true
   actual-cache-key:
     description: "Cache key for actual"
-    required: false
+    required: true
+```
+
+### expected
+
+```yaml
+inputs:
+  expected-dir:
+    description: "Expected directory"
+    required: true
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: true
+```
+
+### prepare
+
+```yaml
+inputs:
+  actual-dir:
+    description: "Actual directory"
+    required: true
+  actual-cache-key:
+    description: "Cache key for actual"
+    required: true
+```
+
+### prepare
+
+```yaml
+inputs:
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: true
+  actual-cache-key:
+    description: "Cache key for actual"
+    required: true
   summary-comment:
     description: "If true, add a summary comment on workflow summary"
     required: false
