@@ -1,6 +1,6 @@
-name: "Easy VRT"
+name: "Compare VRT"
 
-description: "Easy VRT is a utility action for visual regression testing."
+description: "Compare VRT is a utility action for visual regression testing."
 
 author: "yorifuji"
 
@@ -9,160 +9,58 @@ branding:
   color: blue
 
 inputs:
-  mode:
-    description: "Mode, [lookup, expected, actual, compare]"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
-    required: true
-  expected-dir:
-    description: "Expected directory"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
-    required: false
   expected-cache-key:
     description: "Cache key for expected"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
-    required: false
-  actual-dir:
-    description: "Actual directory"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
-    required: false
+    required: required
   actual-cache-key:
     description: "Cache key for actual"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
-    required: false
+    required: required
   summary-comment:
     description: "If true, add a summary comment on workflow summary"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
     default: false
   review-comment:
     description: "If true, add a review comment on PR review"
-    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
     default: false
-
-outputs:
-  actual-sha:
-    description: "Actual SHA"
-    value: ${{ steps.lookup-sha.outputs.actual-sha }}
-  actual-cache-hit:
-    description: "Whether the actual cache was found"
-    value: ${{ steps.lookup-actual-cache.outputs.cache-hit }}
-  expected-sha:
-    description: "Expected SHA"
-    value: ${{ steps.lookup-sha.outputs.expected-sha }}
-  expected-cache-hit:
-    description: "Whether the expected cache was found"
-    value: ${{ steps.lookup-expected-cache.outputs.cache-hit }}
 
 runs:
   using: composite
   steps:
     - shell: bash
       run: |
-        echo "mode: ${{ inputs.mode }}"
-
-    # lookup
-
-    - if: ${{ inputs.mode == 'lookup' }}
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        fetch-depth: 0
-
-    - if: ${{ inputs.mode == 'lookup' }}
-      id: lookup-sha
-      shell: bash
-      run: |
-        echo "actual-sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
-        echo "expected-sha=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
-
-    - if: ${{ inputs.mode == 'lookup' }}
-      id: lookup-actual-cache
-      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-      with:
-        key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
-        path: .easy-vrt/actual
-        lookup-only: true
-
-    - if: ${{ inputs.mode == 'lookup' }}
-      id: lookup-expected-cache
-      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-      with:
-        key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
-        path: .easy-vrt/expected
-        lookup-only: true
-
-    # expected
-
-    - if: ${{ inputs.mode == 'expected' }}
-      shell: bash
-      run: |
-        if [ -e .easy-vrt ]; then exit 1; fi
-        mkdir .easy-vrt && mv ${{ inputs.expected-dir }} .easy-vrt/expected
-
-    - if: ${{ inputs.mode == 'expected' }}
-      uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-      with:
-        path: .easy-vrt/expected
-        key: reg-suit-cache-${{ inputs.expected-cache-key }}
-
-    # actual
-
-    - if: ${{ inputs.mode == 'actual' }}
-      shell: bash
-      run: |
-        if [ -e .easy-vrt ]; then exit 1; fi
-        mkdir .easy-vrt && mv ${{ inputs.actual-dir }} .easy-vrt/actual
-
-    - if: ${{ inputs.mode == 'actual' }}
-      uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-      with:
-        path: .easy-vrt/actual
-        key: reg-suit-cache-${{ inputs.actual-cache-key }}
-
-    # compare
-
-    - if: ${{ inputs.mode == 'compare' }}
-      shell: bash
-      run: |
         echo expected-cache-key ${{ inputs.expected-cache-key }}
         echo actual-cache-key ${{ inputs.actual-cache-key }}
 
-    - if: ${{ inputs.mode == 'compare' }}
-      shell: bash
+    - shell: bash
       run: |
         if [ -e .easy-vrt ]; then exit 1; fi
 
-    - if: ${{ inputs.mode == 'compare' }}
-      shell: bash
+    - shell: bash
       run: |
         if [ -e package.json ]; then exit 1; fi
         if [ -e package-lock.json ]; then exit 1; fi
         cp $GITHUB_ACTION_PATH/package.json $GITHUB_ACTION_PATH/package-lock.json .
 
-    - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+    - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
       with:
         node-version: 20
         cache: npm
 
-    - if: ${{ inputs.mode == 'compare' }}
-      shell: bash
+    - shell: bash
       run: npm install
 
-    - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+    - uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
         path: .easy-vrt/actual
 
-    - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+    - uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
         path: .easy-vrt/expected
 
-    - if: ${{ inputs.mode == 'compare' }}
-      shell: bash
+    - shell: bash
       run: >
         npx reg-cli
         .easy-vrt/actual
@@ -172,7 +70,7 @@ runs:
         -J .easy-vrt/report.json
         --ignoreChange
 
-    - if: ${{ !cancelled() && inputs.mode == 'compare' }}
+    - if: ${{ !cancelled() }}
       id: upload-artifact
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
       with:
@@ -181,7 +79,7 @@ runs:
         include-hidden-files: true
         # retention-days: 3
 
-    - if: ${{ !cancelled() && inputs.mode == 'compare' }}
+    - if: ${{ !cancelled() }}
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       env:
         SUMMARY_COMMENT: ${{ inputs.summary-comment }}

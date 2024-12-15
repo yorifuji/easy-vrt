@@ -1,0 +1,32 @@
+name: "Expected VRT"
+
+description: "Expected VRT is a utility action for visual regression testing."
+
+author: "yorifuji"
+
+branding:
+  icon: code
+  color: blue
+
+inputs:
+  expected-dir:
+    description: "Expected directory"
+    required: true
+  expected-cache-key:
+    description: "Cache key for expected"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # expected
+
+    - shell: bash
+      run: |
+        if [ -e .easy-vrt ]; then exit 1; fi
+        mkdir .easy-vrt && mv ${{ inputs.expected-dir }} .easy-vrt/expected
+
+    - uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        path: .easy-vrt/expected
+        key: reg-suit-cache-${{ inputs.expected-cache-key }}
