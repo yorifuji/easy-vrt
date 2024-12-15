@@ -132,19 +132,19 @@ actual
 ### yorifuji/easy-vrt/prepare
 
 ```yaml
-inputs:
-  expected-dir:
-    description: "Expected directory"
-    required: true
-  expected-cache-key:
-    description: "Cache key for expected"
-    required: true
-  actual-dir:
-    description: "Actual directory"
-    required: true
-  actual-cache-key:
-    description: "Cache key for actual"
-    required: true
+outputs:
+  actual-sha:
+    description: "Actual SHA"
+    value: ${{ steps.lookup-sha.outputs.actual-sha }}
+  actual-cache-hit:
+    description: "Whether the actual cache was found"
+    value: ${{ steps.lookup-actual-cache.outputs.cache-hit }}
+  expected-sha:
+    description: "Expected SHA"
+    value: ${{ steps.lookup-sha.outputs.expected-sha }}
+  expected-cache-hit:
+    description: "Whether the expected cache was found"
+    value: ${{ steps.lookup-expected-cache.outputs.cache-hit }}
 ```
 
 ### yorifuji/easy-vrt/expected
