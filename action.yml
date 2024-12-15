@@ -11,25 +11,32 @@ branding:
 inputs:
   mode:
     description: "Mode, [lookup, expected, actual, compare]"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: true
   expected-dir:
     description: "Expected directory"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
   expected-cache-key:
     description: "Cache key for expected"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
   actual-dir:
     description: "Actual directory"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
   actual-cache-key:
     description: "Cache key for actual"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
   summary-comment:
     description: "If true, add a summary comment on workflow summary"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
     default: false
   review-comment:
     description: "If true, add a review comment on PR review"
+    deprecationMessage: "Easy VRT version 1 is deprecated. Please use version 2."
     required: false
     default: false
 
