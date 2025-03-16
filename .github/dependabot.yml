@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "github-actions"
     directories:
       - "/"
-      - "/actual"
+      - "actual"
       - "compare"
       - "expected"
       - "prepare"
