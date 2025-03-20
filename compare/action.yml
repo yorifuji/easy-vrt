@@ -50,12 +50,12 @@ runs:
     - shell: bash
       run: npm install
 
-    - uses: actions/cache/restore@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.1.2
+    - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
         path: .easy-vrt/actual
 
-    - uses: actions/cache/restore@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.1.2
+    - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
         path: .easy-vrt/expected
