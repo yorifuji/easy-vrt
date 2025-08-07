@@ -42,7 +42,7 @@ runs:
         if [ -e package-lock.json ]; then exit 1; fi
         cp $GITHUB_ACTION_PATH/package.json $GITHUB_ACTION_PATH/package-lock.json .
 
-    - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: 20
         cache: npm
@@ -50,12 +50,12 @@ runs:
     - shell: bash
       run: npm install
 
-    - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+    - uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
         path: .easy-vrt/actual
 
-    - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.1.2
+    - uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.1.2
       with:
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
         path: .easy-vrt/expected
