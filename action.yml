@@ -77,7 +77,7 @@ runs:
 
     - if: ${{ inputs.mode == 'lookup' }}
       id: lookup-actual-cache
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         key: reg-suit-cache-${{ steps.lookup-sha.outputs.actual-sha }}
         path: .easy-vrt/actual
@@ -85,7 +85,7 @@ runs:
 
     - if: ${{ inputs.mode == 'lookup' }}
       id: lookup-expected-cache
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         key: reg-suit-cache-${{ steps.lookup-sha.outputs.expected-sha }}
         path: .easy-vrt/expected
@@ -100,7 +100,7 @@ runs:
         mkdir .easy-vrt && mv ${{ inputs.expected-dir }} .easy-vrt/expected
 
     - if: ${{ inputs.mode == 'expected' }}
-      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         path: .easy-vrt/expected
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
@@ -114,7 +114,7 @@ runs:
         mkdir .easy-vrt && mv ${{ inputs.actual-dir }} .easy-vrt/actual
 
     - if: ${{ inputs.mode == 'actual' }}
-      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         path: .easy-vrt/actual
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
@@ -150,13 +150,13 @@ runs:
       run: npm install
 
     - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         key: reg-suit-cache-${{ inputs.actual-cache-key }}
         path: .easy-vrt/actual
 
     - if: ${{ inputs.mode == 'compare' }}
-      uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         key: reg-suit-cache-${{ inputs.expected-cache-key }}
         path: .easy-vrt/expected
